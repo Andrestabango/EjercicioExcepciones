@@ -83,10 +83,10 @@ public class Producto {
             if (cantidades[indice] == 0) {
                 throw new ArithmeticException("La cantidad del producto no puede ser cero.");
             }
-            float valorUnitario = precios[indice] / cantidades[indice];
+
             float valorTotal = precios[indice]*cantidades[indice];
 
-            System.out.println("Valor Unitario: " + valorUnitario);
+
             System.out.println("Valor Total: " + valorTotal);
         } catch (ArithmeticException e) {
             System.out.println("Error: " + e.getMessage());
@@ -96,25 +96,31 @@ public class Producto {
 
     public void buscarProductoPorIndice() {
         Scanner scanner = new Scanner(System.in);
-        try {
-            System.out.print("Ingrese el índice del producto a buscar: ");
-            int indiceBuscado = scanner.nextInt();
-            validarIndice(indiceBuscado);
-            System.out.println("\nProducto encontrado:");
-            System.out.println("\nProducto #" + indiceBuscado);
-            imprimirInformacionProducto(indiceBuscado - 1);
-        } catch (InputMismatchException | IndiceInvalidoException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        boolean indiceValido = false;
+
+        do {
+            try {
+                System.out.print("Ingrese el índice del producto a buscar: ");
+                int indiceBuscado = scanner.nextInt();
+                validarIndice(indiceBuscado);
+                System.out.println("\nProducto encontrado:");
+                System.out.println("\nProducto #" + indiceBuscado);
+                imprimirInformacionProducto(indiceBuscado - 1);
+                indiceValido = true;  // Si llega aquí sin lanzar excepciones, el índice es válido
+            } catch (InputMismatchException | IndiceInvalidoException e) {
+                scanner.nextLine(); // Limpiar el buffer del scanner
+                System.out.println("Error: " + e.getMessage());
+                System.out.println("Por favor, ingrese un índice válido.");
+            }
+        } while (!indiceValido);
     }
+
 
     private void imprimirInformacionProducto(int indice) {
         System.out.println("Nombre del producto: " + nombres[indice]);
         System.out.println("Cantidad: " + cantidades[indice]);
         System.out.println("Precio: " + precios[indice]);
-        float valorUnitario = precios[indice] / cantidades[indice];
         float valorTotal = precios[indice]*cantidades[indice];
-        System.out.println("Valor Unitario: " + valorUnitario);
         System.out.println("Valor Total: " + valorTotal);
     }
 
