@@ -11,6 +11,11 @@ class IndiceInvalidoException extends Exception {
         super(mensaje);
     }
 }
+class CantidadProductoInvalidaException extends Exception {
+    public CantidadProductoInvalidaException(String mensaje) {
+        super(mensaje);
+    }
+}
 
 public class Producto {
 
@@ -24,9 +29,10 @@ public class Producto {
 
     public void ingresarDatos() {
         Scanner scanner = new Scanner(System.in);
+
         System.out.print("Ingrese la cantidad de productos: ");
         cantidadProductos = scanner.nextInt();
-        scanner.nextLine(); // Limpiar el buffer del scanner
+        scanner.nextLine();
 
         nombres = new String[cantidadProductos];
         cantidades = new int[cantidadProductos];
@@ -45,17 +51,24 @@ public class Producto {
                 }
             } while (!nombreIngresadoCorrectamente);
 
+            boolean cantidadIngresadaCorrectamente = false;
             do {
-                System.out.print("Ingrese la cantidad del producto #" + (i + 1) + ": ");
-                cantidades[i] = scanner.nextInt();
-                if (cantidades[i] <= 0) {
-                    System.out.println("Error: La cantidad del producto debe ser un número positivo.");
+                try {
+                    System.out.print("Ingrese la cantidad del producto #" + (i + 1) + ": ");
+                   cantidades[i]  = scanner.nextInt();
+                    validarCantidadProducto(cantidades[i]);
+                    cantidadIngresadaCorrectamente = true;
+                } catch (InputMismatchException e) {
+                    System.out.println("Error: La cantidad debe ser un número entero.");
+                    scanner.nextLine();
+                } catch (CantidadProductoInvalidaException e) {
+                    System.out.println("Error: " + e.getMessage());
                 }
-            } while (cantidades[i] <= 0);
+            } while (!cantidadIngresadaCorrectamente);
 
             System.out.print("Ingrese el precio del producto #" + (i + 1) + ": ");
             precios[i] = scanner.nextFloat();
-            scanner.nextLine(); // Limpiar el buffer del scanner
+            scanner.nextLine();
         }
     }
 
@@ -65,6 +78,11 @@ public class Producto {
         }
     }
 
+    public void validarCantidadProducto(int cantidad) throws CantidadProductoInvalidaException {
+        if (cantidad <= 0) {
+            throw new CantidadProductoInvalidaException("La cantidad del producto debe ser mayor a 0.");
+        }
+    }
 
 
     public void imprimirInformacionProductos() {
@@ -79,18 +97,9 @@ public class Producto {
     }
 
     public void calcularTotal(int indice) {
-        try {
-            if (cantidades[indice] == 0) {
-                throw new ArithmeticException("La cantidad del producto no puede ser cero.");
-            }
+        float valorTotal = precios[indice]*cantidades[indice];
+        System.out.println("Valor Total: " + valorTotal);
 
-            float valorTotal = precios[indice]*cantidades[indice];
-
-
-            System.out.println("Valor Total: " + valorTotal);
-        } catch (ArithmeticException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
     }
 
 
@@ -106,9 +115,9 @@ public class Producto {
                 System.out.println("\nProducto encontrado:");
                 System.out.println("\nProducto #" + indiceBuscado);
                 imprimirInformacionProducto(indiceBuscado - 1);
-                indiceValido = true;  // Si llega aquí sin lanzar excepciones, el índice es válido
+                indiceValido = true;
             } catch (InputMismatchException | IndiceInvalidoException e) {
-                scanner.nextLine(); // Limpiar el buffer del scanner
+                scanner.nextLine();
                 System.out.println("Error: " + e.getMessage());
                 System.out.println("Por favor, ingrese un índice válido.");
             }
